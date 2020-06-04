@@ -491,7 +491,7 @@ def to_numpy_matrix(
     return M
 
 
-def from_numpy_matrix(A, parallel_edges=False, create_using=None):
+def from_numpy_matrix(A, parallel_edges=False, create_using=None, selfloop_flag=True):
     """Returns a graph from numpy matrix.
 
     The numpy matrix is interpreted as an adjacency matrix for the graph.
@@ -510,6 +510,10 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
 
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
+
+    selfloop : Boolean
+        If True, `A` will retain its self-loops.
+        If False, the values of the principal diagonal of `A` will became 0.
 
     Notes
     -----
@@ -598,6 +602,10 @@ def from_numpy_matrix(A, parallel_edges=False, create_using=None):
         python_type = kind_to_python_type[dt.kind]
     except Exception:
         raise TypeError(f"Unknown numpy data type: {dt}")
+
+    if selfloop_flag == False:
+        for i in range(len(A)):
+        A[i,i] = 0
 
     # Make sure we get even the isolated nodes of the graph.
     G.add_nodes_from(range(n))
@@ -1197,7 +1205,7 @@ def to_numpy_array(
     return A
 
 
-def from_numpy_array(A, parallel_edges=False, create_using=None):
+def from_numpy_array(A, parallel_edges=False, create_using=None, selfloop_flag=True):
     """Returns a graph from NumPy array.
 
     The NumPy array is interpreted as an adjacency matrix for the graph.
@@ -1217,6 +1225,10 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
     create_using : NetworkX graph constructor, optional (default=nx.Graph)
        Graph type to create. If graph instance, then cleared before populated.
 
+    selfloop : Boolean
+        If True, `A` will retain its self-loops.
+        If False, the values of the principal diagonal of `A` will became 0.
+        
     Notes
     -----
     For directed graphs, explicitly mention create_using=nx.DiGraph,
@@ -1286,5 +1298,5 @@ def from_numpy_array(A, parallel_edges=False, create_using=None):
 
     """
     return from_numpy_matrix(
-        A, parallel_edges=parallel_edges, create_using=create_using
+        A, parallel_edges=parallel_edges, create_using=create_using, selfloop_flag=selfloop_flag
     )
